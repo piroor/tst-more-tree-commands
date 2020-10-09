@@ -1,0 +1,26 @@
+{
+  "manifest_version": 2,
+  "name": "__MSG_extensionName__",
+  "version": "0.0.1",
+  "author": "YUKI \"Piro\" Hiroshi",
+  "description": "__MSG_extensionDescription__",
+  "permissions": [
+    "menus",
+    "tabs",
+    "storage"
+  ],
+  "background": {
+    "page": "/background/background.html"
+  },
+  "commands": {
+  },
+  "options_ui": {
+    "page": "/options/options.html"
+  },
+  "default_locale": "en",
+  "applications": {
+    "gecko": {
+      "id": "tst-more-tree-commands@piro.sakura.ne.jp"
+    }
+  }
+}

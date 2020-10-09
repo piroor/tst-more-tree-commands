@@ -1,0 +1,47 @@
+/*
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+*/
+
+:root > * {
+  transition: opacity 0.25s ease-out;
+}
+:root:not(.initialized) > * {
+  opacity: 0;
+}
+
+body {
+  background: var(--bg-color);
+  color: var(--text-color);
+}
+
+:root:not(.debugging) #debug-configs {
+  max-height: 0;
+  overflow: hidden;
+}
+
+:root:not(.debugging) #debug-configs * {
+  -moz-user-focus: ignore;
+  -moz-user-input: disabled;
+}
+
+
+p, ul {
+  margin: 0 0 0.5em 0;
+  padding: 0;
+}
+
+ul,
+ul li {
+  list-style: none;
+}
+
+p.sub {
+  margin-left: 2em;
+}
+
+ul p.sub {
+  margin-top: 0;
+  margin-bottom: 0;
+}

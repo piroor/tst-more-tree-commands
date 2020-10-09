@@ -1,0 +1,25 @@
+language: node_js
+node_js:
+  - "10"
+  - "8"
+notifications:
+  recipients:
+    - piro.outsider.reflex@gmail.com
+before_script:
+  - npm install
+  - make update_extlib
+  - make install_extlib
+script:
+  - make lint
+before_deploy:
+  - make
+deploy:
+  provider: releases
+  api_key:
+    secure: "2/pOaK3Tw8m6XhxBaWFYRIebI85aAWu3WDYYDbMNIUp3S2BTD2UibAMg2hxJrjIfg6M+xTwLwJsE2s6hTyjiHtZTyPnAz1DbXX5Q3n004LcN/TJFtWTd+J4t6yrCYl2rEMs6MInGUKZqBDGLSVrWfY7ZT2FTuuOwAQt37xrtFDO6rq5qUbshGN2MjksCnhpNMfMlm/BvopYCr/WEApwjUpurFdiI8laGn+RuAnFuQR6QgwOlIHywSqKyYVpEs1Nceyyk/p6P4wYXYwrKKmLy8Mj1CHhi/ksb6Pj6vYvgOMAOKoUZBX5JOj852yqeYXBNLD26rtYId2LHUYG2ePv5m523I1s2hGCSU7v9S25xYjePAS+NCFaTVC/G0MrNgIoq4O4Vs8MjItscNBmU6wNRYcB9MfZpRxgPhTqyr/efWWXOE60uK3acBuRYLzZIDUB/5oloQJbde+aa5//piBCYge/PzH/4C6f9RXK4mNh4LXYxGCWzLY0KtG3VGouig4VcFsaYGy7mONEW9aIKbpiz7jtVLBYvXYpAGbsjscgx6tCZWMowQYiY0Q/OM4ehPKgsvL0QFoo/Qo4rgASVyKf8HUbWTp3WVlchReYZtyps1twwtm47fA54UXLfCpdPYNQDB72/CPdGl7N73MYmENYo06ij+jUdZcBk6toG2bLtiYo="
+  file:
+    - tst-more-tree-commands.xpi
+  skip_cleanup: true
+  on:
+    repo: piroor/tst-more-tree-commands
+    tags: true
