@@ -8,6 +8,7 @@
 import Configs from '/extlib/Configs.js';
 
 export const configs = new Configs({
+  cleanupGroupTabsAfterFlattenTree: true
 }, {
   localKeys: [
   ]

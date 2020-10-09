@@ -152,37 +152,36 @@ function collectTabIds(tabs, { tabIds, includeParent } = {}) {
 }
 
 async function ungroup(tabs) {
-  const [treeItems, allTabs] = await Promise.all([
-    browser.runtime.sendMessage(TST_ID, {
-      type: 'get-tree',
-      tabs: tabs.map(tab => tab.id)
-    }),
-    browser.tabs.query({ windowId: tabs[0].windowId })
-  ]);
-  const targetTabIds = collectTabIds(treeItems, { includeParent: true });
-  const allTabIds = allTabs.map(tab => tab.id);
-  const shouldDetachAll = treeItems.some(item => item.ancestorTabIds.length == 0);
+  const treeItems = await browser.runtime.sendMessage(TST_ID, {
+    type: 'get-tree',
+    tabs: tabs.map(tab => tab.id)
+  });
   const parentTabs = treeItems.filter(item => item.children.length > 0);
-  await flattenInternal(parentTabs, { targetTabIds, allTabIds, shouldDetachAll });
+  await flattenInternal(parentTabs, {
+    shouldDetachAll:  treeItems.some(item => item.ancestorTabIds.length == 0),
+    cleanupGroupTabs: true
+  });
 }
 
 async function flatten(tabs) {
-  const [treeItems, allTabs] = await Promise.all([
-    browser.runtime.sendMessage(TST_ID, {
-      type: 'get-tree',
-      tabs: tabs.map(tab => tab.id)
-    }),
-    browser.tabs.query({ windowId: tabs[0].windowId })
-  ]);
-  const targetTabIds = collectTabIds(treeItems, { includeParent: true });
-  const allTabIds = allTabs.map(tab => tab.id);
-  const shouldDetachAll = treeItems.some(item => item.ancestorTabIds.length == 0);
+  const treeItems = await browser.runtime.sendMessage(TST_ID, {
+    type: 'get-tree',
+    tabs: tabs.map(tab => tab.id)
+  })
   const parentTabs = treeItems.filter(item => item.children.length > 0);
-  await flattenInternal(parentTabs, { targetTabIds, allTabIds, shouldDetachAll, recursively: true });
+  await flattenInternal(parentTabs, {
+    shouldDetachAll:  treeItems.some(item => item.ancestorTabIds.length == 0),
+    recursively:      true,
+    cleanupGroupTabs: configs.cleanupGroupTabsAfterFlattenTree
+  });
 }
-async function flattenInternal(tabs, { targetTabIds, allTabIds, shouldDetachAll, recursively, insertBefore }) {
+async function flattenInternal(tabs, { targetTabIds, shouldDetachAll, recursively, cleanupGroupTabs, insertBefore, allTabIds }) {
+  if (!targetTabIds)
+    targetTabIds = collectTabIds(tabs, { includeParent: true });
   if (!insertBefore)
     insertBefore = { id: null };
+  if (!allTabIds)
+    allTabIds = (await browser.tabs.query({ windowId: tabs[0].windowId })).map(tab => tab.id);
 
   for (const tab of tabs.slice(0).reverse()) {
     if (!tab)
@@ -220,9 +219,11 @@ async function flattenInternal(tabs, { targetTabIds, allTabIds, shouldDetachAll,
     tab.children = [];
   }
 
-  const groupTabs = tabs.filter(tab => tab.states.includes('group-tab'));
-  if (groupTabs.length > 0)
-    browser.tabs.remove(groupTabs.map(tab => tab.id));
+  if (cleanupGroupTabs) {
+    const groupTabs = tabs.filter(tab => tab.states.includes('group-tab'));
+    if (groupTabs.length > 0)
+      browser.tabs.remove(groupTabs.map(tab => tab.id));
+  }
 }
 
 function indent(tabs) {
