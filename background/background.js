@@ -11,33 +11,33 @@ import {
 
 const TST_ID = 'treestyletab@piro.sakura.ne.jp';
 
-export async function getMultiselectedTabs(tab) {
-  if (!tab)
-    return [];
-  if (tab.highlighted)
-    return browser.tabs.query({
-      windowId:    tab.windowId,
-      highlighted: true
-    });
-  else
-    return [tab];
-}
-
 const menuItemDefinitionsById = {
   moreTreeCommands: {
     title:    browser.i18n.getMessage('context_moreTreeCommands_label'),
     contexts: ['tab'],
     visible:  true
   },
-  groupTabs: {
+  group: {
     parentId: 'moreTreeCommands',
-    title:    browser.i18n.getMessage('context_groupTabs_label'),
+    title:    browser.i18n.getMessage('context_group_label'),
     contexts: ['tab'],
     visible:  true
   },
-  ungroupTabs: {
+  ungroup: {
     parentId: 'moreTreeCommands',
-    title:    browser.i18n.getMessage('context_ungroupTabs_label'),
+    title:    browser.i18n.getMessage('context_ungroup_label'),
+    contexts: ['tab'],
+    visible:  true
+  },
+  flatten: {
+    parentId: 'moreTreeCommands',
+    title:    browser.i18n.getMessage('context_flatten_label'),
+    contexts: ['tab'],
+    visible:  true
+  },
+  separatorAfterGrouping: {
+    parentId: 'moreTreeCommands',
+    type:     'separator',
     contexts: ['tab'],
     visible:  true
   },
@@ -67,11 +67,14 @@ browser.menus.onClicked.addListener(async (info, tab) => {
   const miltiselectedTabs = await getMultiselectedTabs(tab);
 
   switch (info.menuItemId) {
-    case 'groupTabs':
+    case 'group':
       group(miltiselectedTabs);
       return;
-    case 'ungroupTabs':
+    case 'ungroup':
       ungroup(miltiselectedTabs);
+      return;
+    case 'flatten':
+      flatten(miltiselectedTabs);
       return;
 
     case 'indent':
@@ -95,11 +98,14 @@ browser.commands.onCommand.addListener(async command => {
   const miltiselectedTabs = await getMultiselectedTabs(activeTabs[0]);
 
   switch (command) {
-    case 'groupSelectedTabs':
+    case 'group':
       group(miltiselectedTabs);
       return;
-    case 'ungroupTabs':
+    case 'ungroup':
       ungroup(miltiselectedTabs);
+      return;
+    case 'flatten':
+      flatten(miltiselectedTabs);
       return;
 
     case 'indent':
@@ -111,6 +117,18 @@ browser.commands.onCommand.addListener(async command => {
   }
 });
 
+async function getMultiselectedTabs(tab) {
+  if (!tab)
+    return [];
+  if (tab.highlighted)
+    return browser.tabs.query({
+      windowId:    tab.windowId,
+      highlighted: true
+    });
+  else
+    return [tab];
+}
+
 function group(tabs) {
   if (tabs.length > 1)
     browser.runtime.sendMessage(TST_ID, {
@@ -119,7 +137,92 @@ function group(tabs) {
     });
 }
 
-function ungroup(tabs) {
+function collectTabIds(tabs, { tabIds, includeParent } = {}) {
+  if (!tabIds)
+    tabIds = new Set();
+  for (const tab of tabs) {
+    tabIds.add(tab.id);
+    if (includeParent &&
+        tab.ancestorTabIds.length > 0)
+      tabIds.add(tab.ancestorTabIds[0]);
+    if (tab.children)
+      collectTabIds(tab.children, { tabIds, includeParent });
+  }
+  return tabIds;
+}
+
+async function ungroup(tabs) {
+  const [treeItems, allTabs] = await Promise.all([
+    browser.runtime.sendMessage(TST_ID, {
+      type: 'get-tree',
+      tabs: tabs.map(tab => tab.id)
+    }),
+    browser.tabs.query({ windowId: tabs[0].windowId })
+  ]);
+  const targetTabIds = collectTabIds(treeItems, { includeParent: true });
+  const allTabIds = allTabs.map(tab => tab.id);
+  const shouldDetachAll = treeItems.some(item => item.ancestorTabIds.length == 0);
+  const parentTabs = treeItems.filter(item => item.children.length > 0);
+  await flattenInternal(parentTabs, { targetTabIds, allTabIds, shouldDetachAll });
+}
+
+async function flatten(tabs) {
+  const [treeItems, allTabs] = await Promise.all([
+    browser.runtime.sendMessage(TST_ID, {
+      type: 'get-tree',
+      tabs: tabs.map(tab => tab.id)
+    }),
+    browser.tabs.query({ windowId: tabs[0].windowId })
+  ]);
+  const targetTabIds = collectTabIds(treeItems, { includeParent: true });
+  const allTabIds = allTabs.map(tab => tab.id);
+  const shouldDetachAll = treeItems.some(item => item.ancestorTabIds.length == 0);
+  const parentTabs = treeItems.filter(item => item.children.length > 0);
+  await flattenInternal(parentTabs, { targetTabIds, allTabIds, shouldDetachAll, recursively: true });
+}
+async function flattenInternal(tabs, { targetTabIds, allTabIds, shouldDetachAll, recursively, insertBefore }) {
+  if (!insertBefore)
+    insertBefore = { id: null };
+
+  for (const tab of tabs.slice(0).reverse()) {
+    if (!tab)
+      continue;
+
+    const index = allTabIds.indexOf(tab.id);
+    if (index < allTabIds.length - 1)
+      insertBefore.id = allTabIds[index + 1];
+    else
+      insertBefore.id = null;
+
+    const children = tab.children.slice(0).reverse();
+    if (recursively)
+      await flattenInternal(children, { targetTabIds, allTabIds, shouldDetachAll, recursively, insertBefore });
+    const topLevelParent = !shouldDetachAll && tab.ancestorTabIds.reverse().find(id => targetTabIds.has(id));
+    for (const child of children) {
+      if (!child)
+        continue;
+      if (topLevelParent) {
+        await browser.runtime.sendMessage(TST_ID, {
+          type:   'attach',
+          parent: topLevelParent,
+          child:  child.id,
+          insertBefore: insertBefore.id
+        });
+      }
+      else {
+        await browser.runtime.sendMessage(TST_ID, {
+          type: 'detach',
+          tab:  child.id
+        });
+      }
+      insertBefore.id = child.id;
+    }
+    tab.children = [];
+  }
+
+  const groupTabs = tabs.filter(tab => tab.states.includes('group-tab'));
+  if (groupTabs.length > 0)
+    browser.tabs.remove(groupTabs.map(tab => tab.id));
 }
 
 function indent(tabs) {

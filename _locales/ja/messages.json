@@ -2,16 +2,21 @@
   "extensionName": { "message": "TST More Tree Commands" },
   "extensionDescription": { "message": "Tree Style Tabに対し、ツリーの操作のための追加のコマンドを提供します。" },
 
-  "command_groupSelectedTabs":     { "message": "選択中のタブを新しいグループにする" },
-  "command_ungroupTabs":           { "message": "タブのグループ化を解除" },
-  "command_indent":                { "message": "現在のタブを1階層深くする" },
-  "command_outdent":               { "message": "現在のタブを1階層浅くする" },
+  "command_group":   { "message": "選択中のタブを新しいグループにする" },
+  "command_ungroup": { "message": "タブのグループ化を解除" },
+  "command_flatten": { "message": "タブのツリーを解除" },
+  "command_indent":  { "message": "現在のタブを1階層深くする" },
+  "command_outdent": { "message": "現在のタブを1階層浅くする" },
 
   "context_moreTreeCommands_label": { "message": "ツリーの操作" },
-  "context_groupTabs_label": { "message": "これらのタブを新しいグループにする(&G)" },
-  "context_groupTabs_command": { "message": "これらのタブを新しいグループにする" },
-  "context_ungroupTabs_label":  { "message": "グループ化を解除(&N)" },
-  "context_ungroupTabs_command":{ "message": "グループ化を解除" },
-  "context_indent_label":                { "message": "1階層深く(&I)" },
-  "context_outdent_label":               { "message": "1階層浅く(&O)" }
+  "context_group_label":     { "message": "これらのタブを新しいグループにする(&G)" },
+  "context_group_command":   { "message": "これらのタブを新しいグループにする" },
+  "context_ungroup_label":   { "message": "グループ化を解除(&U)" },
+  "context_ungroup_command": { "message": "グループ化を解除" },
+  "context_flatten_label":   { "message": "ツリーを解除(&F)" },
+  "context_flatten_command": { "message": "ツリーを解除" },
+  "context_indent_label":    { "message": "1階層深く(&I)" },
+  "context_indent_command":  { "message": "1階層深く" },
+  "context_outdent_label":   { "message": "1階層浅く(&O)" },
+  "context_outdent_command": { "message": "1階層浅く" }
 }

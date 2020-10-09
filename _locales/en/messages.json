@@ -2,16 +2,21 @@
   "extensionName": { "message": "TST More Tree Commands" },
   "extensionDescription": { "message": "Provides extra tree manipulation commands for Tree Style Tab." },
 
-  "command_groupSelectedTabs":     { "message": "Create New Group from Selected Tabs" },
-  "command_ungroupTabs":           { "message": "Ungroup Tabs" },
-  "command_indent":                { "message": "Indent Current Tab" },
-  "command_outdent":               { "message": "Outdent Current Tab" },
+  "command_group":   { "message": "Create New Group from Selected Tabs" },
+  "command_ungroup": { "message": "Ungroup Tabs" },
+  "command_flatten": { "message": "Flatten Tree" },
+  "command_indent":  { "message": "Indent Current Tab" },
+  "command_outdent": { "message": "Outdent Current Tab" },
 
   "context_moreTreeCommands_label": { "message": "Operate Tree" },
-  "context_groupTabs_label":    { "message": "Create New &Group from tabs" },
-  "context_groupTabs_command":    { "message": "Create New Group from tabs" },
-  "context_ungroupTabs_label":  { "message": "U&ngroup tabs" },
-  "context_ungroupTabs_command":{ "message": "Ungroup tabs" },
-  "context_indent_label":                { "message": "&Indent" },
-  "context_outdent_label":               { "message": "&Outdent" }
+  "context_group_label":     { "message": "Create New &Group from tabs" },
+  "context_group_command":   { "message": "Create New Group from tabs" },
+  "context_ungroup_label":   { "message": "&Ungroup tabs" },
+  "context_ungroup_command": { "message": "Ungroup tabs" },
+  "context_flatten_label":   { "message": "&Flatten tree" },
+  "context_flatten_command": { "message": "Flatten tree" },
+  "context_indent_label":    { "message": "&Indent" },
+  "context_indent_command":  { "message": "Indent" },
+  "context_outdent_label":   { "message": "&Outdent" },
+  "context_outdent_command": { "message": "Outdent" }
 }

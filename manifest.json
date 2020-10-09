@@ -13,11 +13,14 @@
     "page": "/background/background.html"
   },
   "commands": {
-    "groupSelectedTabs": {
-      "description": "__MSG_command_groupSelectedTabs__"
+    "group": {
+      "description": "__MSG_command_group__"
     },
-    "ungroupTabs": {
-      "description": "__MSG_command_ungroupTabs__"
+    "ungroup": {
+      "description": "__MSG_command_ungroup__"
+    },
+    "flatten": {
+      "description": "__MSG_command_flatten__"
     },
     "indent": {
       "description": "__MSG_command_indent__"
