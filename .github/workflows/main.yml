@@ -19,3 +19,4 @@ jobs:
     - uses: actions/upload-artifact@master
       with:
         name: tst-more-tree-commands.xpi
+        path: tst-more-tree-commands.xpi
