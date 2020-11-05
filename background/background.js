@@ -12,7 +12,7 @@ import {
 const TST_ID = 'treestyletab@piro.sakura.ne.jp';
 
 const menuItemDefinitionsById = {
-  moreTreeCommands: {
+  topLevel_moreTreeCommands: {
     title:    browser.i18n.getMessage('context_moreTreeCommands_label'),
     contexts: ['tab'],
     visible:  true
@@ -52,11 +52,65 @@ const menuItemDefinitionsById = {
     title:    browser.i18n.getMessage('context_outdent_label'),
     contexts: ['tab'],
     visible:  true
+  },
+
+  topLevel_group: {
+    title:    browser.i18n.getMessage('context_group_label'),
+    contexts: ['tab'],
+    visible:  true
+  },
+  topLevel_ungroup: {
+    title:    browser.i18n.getMessage('context_ungroup_label'),
+    contexts: ['tab'],
+    visible:  true
+  },
+  topLevel_flatten: {
+    title:    browser.i18n.getMessage('context_flatten_label'),
+    contexts: ['tab'],
+    visible:  true
+  },
+  topLevel_indent: {
+    title:    browser.i18n.getMessage('context_indent_label'),
+    contexts: ['tab'],
+    visible:  true
+  },
+  topLevel_outdent: {
+    title:    browser.i18n.getMessage('context_outdent_label'),
+    contexts: ['tab'],
+    visible:  true
   }
 };
-for (const [key, definition] of Object.entries(menuItemDefinitionsById)) {
-  definition.id = key;
-  browser.menus.create(definition);
+for (const [id, definition] of Object.entries(menuItemDefinitionsById)) {
+  const params = {
+    id,
+    title:    definition.title,
+    contexts: definition.contexts,
+    visible:  definition.visible
+  };
+  if (definition.parentId)
+    params.parentId = definition.parentId;
+  browser.menus.create(params);
+}
+
+browser.menus.onShown.addListener(async (info, tab) => {
+  //const miltiselectedTabs = await getMultiselectedTabs(tab);
+
+  let modified = false;
+  for (const [id, definition] of Object.entries(menuItemDefinitionsById)) {
+    if (!id.startsWith('topLevel_'))
+      continue;
+
+    const name = info.menuItemId.replace(/^topLevel_/, '');
+    const visible = configs.contextMenuTopLevelCommand == name;
+    if (definition.visible == visible)
+      continue;
+
+    browser.menus.update(id, { visible });
+    definition.visible = visible;
+    modified = true;
+  }
+  if (modified)
+    browser.menus.refresh();
 }
 
 browser.menus.onClicked.addListener(async (info, tab) => {
@@ -66,7 +120,7 @@ browser.menus.onClicked.addListener(async (info, tab) => {
 
   const miltiselectedTabs = await getMultiselectedTabs(tab);
 
-  switch (info.menuItemId) {
+  switch (info.menuItemId.replace(/^topLevel_/, '')) {
     case 'group':
       group(miltiselectedTabs);
       return;
