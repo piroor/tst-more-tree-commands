@@ -18,5 +18,11 @@
   "context_indent_label":    { "message": "&Indent" },
   "context_indent_command":  { "message": "Indent" },
   "context_outdent_label":   { "message": "&Outdent" },
-  "context_outdent_command": { "message": "Outdent" }
+  "context_outdent_command": { "message": "Outdent" },
+
+
+  "config_title": { "message": "TST More Tree Commands Options" },
+
+  "config_contextMenuTopLevelCommand_label": { "message": "Visible command in the context menu" },
+  "config_contextMenuTopLevelCommand_all": { "message": "All (under a submenu)" }
 }

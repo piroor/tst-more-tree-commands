@@ -7,11 +7,27 @@
     <meta charset="UTF-8">
     <script type="module" src="/options/init.js"></script>
     <link rel="stylesheet" type="text/css" href="options.css"/>
+    <title>__MSG_config_title__</title>
   </head>
   <body>
 <!--
     <h1>__MSG_config_general_caption__</h1>
 -->
+    <fieldset>
+      <legend>__MSG_config_contextMenuTopLevelCommand_label__</legend>
+      <p><label><input type="radio" name="contextMenuTopLevelCommand" value="moreTreeCommands">
+                __MSG_config_contextMenuTopLevelCommand_all__</label></p>
+      <hr>
+      <p><label><input type="radio" name="contextMenuTopLevelCommand" value="group">
+                __MSG_context_group_command__</label></p>
+      <p><label><input type="radio" name="contextMenuTopLevelCommand" value="ungroup">
+                __MSG_context_ungroup_command__</label></p>
+      <p><label><input type="radio" name="contextMenuTopLevelCommand" value="flatten">
+                __MSG_context_flatten_command__</label></p>
+      <p><label><input type="radio" name="contextMenuTopLevelCommand" value="indent">
+                __MSG_context_indent_command__</label></p>
+      <p><label><input type="radio" name="contextMenuTopLevelCommand" value="outdent">
+                __MSG_context_outdent_command__</label></p>
 
 <!--
     <h1>__MSG_config_debug_caption__</h1>

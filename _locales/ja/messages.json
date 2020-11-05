@@ -18,5 +18,11 @@
   "context_indent_label":    { "message": "1階層深く(&I)" },
   "context_indent_command":  { "message": "1階層深く" },
   "context_outdent_label":   { "message": "1階層浅く(&O)" },
-  "context_outdent_command": { "message": "1階層浅く" }
+  "context_outdent_command": { "message": "1階層浅く" },
+
+
+  "config_title": { "message": "TST More Tree Commandsの設定" },
+
+  "config_contextMenuTopLevelCommand_label": { "message": "コンテキストメニューで使う機能" },
+  "config_contextMenuTopLevelCommand_all": { "message": "すべて（サブメニューに表示）" }
 }
