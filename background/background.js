@@ -15,77 +15,91 @@ const menuItemDefinitionsById = {
   topLevel_moreTreeCommands: {
     title:    browser.i18n.getMessage('context_moreTreeCommands_label'),
     contexts: ['tab'],
-    visible:  true
+    visible:  false,
+    enabled:  true
   },
   group: {
-    parentId: 'moreTreeCommands',
+    parentId: 'topLevel_moreTreeCommands',
     title:    browser.i18n.getMessage('context_group_label'),
     contexts: ['tab'],
-    visible:  true
+    visible:  true,
+    enabled:  false
   },
   ungroup: {
-    parentId: 'moreTreeCommands',
+    parentId: 'topLevel_moreTreeCommands',
     title:    browser.i18n.getMessage('context_ungroup_label'),
     contexts: ['tab'],
-    visible:  true
+    visible:  true,
+    enabled:  false
   },
   flatten: {
-    parentId: 'moreTreeCommands',
+    parentId: 'topLevel_moreTreeCommands',
     title:    browser.i18n.getMessage('context_flatten_label'),
     contexts: ['tab'],
-    visible:  true
+    visible:  true,
+    enabled:  false
   },
   separatorAfterGrouping: {
-    parentId: 'moreTreeCommands',
+    parentId: 'topLevel_moreTreeCommands',
     type:     'separator',
     contexts: ['tab'],
-    visible:  true
+    visible:  true,
+    enabled:  true
   },
   indent: {
-    parentId: 'moreTreeCommands',
+    parentId: 'topLevel_moreTreeCommands',
     title:    browser.i18n.getMessage('context_indent_label'),
     contexts: ['tab'],
-    visible:  true
+    visible:  true,
+    enabled:  true
   },
   outdent: {
-    parentId: 'moreTreeCommands',
+    parentId: 'topLevel_moreTreeCommands',
     title:    browser.i18n.getMessage('context_outdent_label'),
     contexts: ['tab'],
-    visible:  true
+    visible:  true,
+    enabled:  false
   },
 
   topLevel_group: {
     title:    browser.i18n.getMessage('context_group_label'),
     contexts: ['tab'],
-    visible:  true
+    visible:  false,
+    enabled:  false
   },
   topLevel_ungroup: {
     title:    browser.i18n.getMessage('context_ungroup_label'),
     contexts: ['tab'],
-    visible:  true
+    visible:  false,
+    enabled:  false
   },
   topLevel_flatten: {
     title:    browser.i18n.getMessage('context_flatten_label'),
     contexts: ['tab'],
-    visible:  true
+    visible:  false,
+    enabled:  false
   },
   topLevel_indent: {
     title:    browser.i18n.getMessage('context_indent_label'),
     contexts: ['tab'],
-    visible:  true
+    visible:  false,
+    enabled:  true
   },
   topLevel_outdent: {
     title:    browser.i18n.getMessage('context_outdent_label'),
     contexts: ['tab'],
-    visible:  true
+    visible:  false,
+    enabled:  false
   }
 };
 for (const [id, definition] of Object.entries(menuItemDefinitionsById)) {
   const params = {
     id,
     title:    definition.title,
+    type:     definition.type || 'normal',
     contexts: definition.contexts,
-    visible:  definition.visible
+    visible:  definition.visible,
+    enabled:  definition.enabled
   };
   if (definition.parentId)
     params.parentId = definition.parentId;
@@ -93,25 +107,56 @@ for (const [id, definition] of Object.entries(menuItemDefinitionsById)) {
 }
 
 browser.menus.onShown.addListener(async (info, tab) => {
-  //const miltiselectedTabs = await getMultiselectedTabs(tab);
+  const miltiselectedTabs = await getMultiselectedTabs(tab);
+  const treeItems = await getTreeItems(miltiselectedTabs);
+  const rootItems = collectRootItems(treeItems);
+  console.log({miltiselectedTabs, treeItems, rootItems});
 
   let modified = false;
   for (const [id, definition] of Object.entries(menuItemDefinitionsById)) {
-    if (!id.startsWith('topLevel_'))
+    const name = id.replace(/^topLevel_/, '');
+    const visible = id.startsWith('topLevel_') ? configs.contextMenuTopLevelCommand == name : true;
+    if (!visible && !definition.visible)
       continue;
 
-    const name = info.menuItemId.replace(/^topLevel_/, '');
-    const visible = configs.contextMenuTopLevelCommand == name;
-    if (definition.visible == visible)
+    const changes = {};
+
+    if (definition.visible != visible)
+      changes.visible = definition.visible = visible;
+
+    let enabled;
+    switch (name) {
+      case 'group':
+        enabled = miltiselectedTabs.length > 1;
+        break;
+
+      case 'ungroup':
+        enabled = treeItems.some(tab => tab.states.includes('group-tab'));
+        break;
+
+      case 'flatten':
+        enabled = treeItems.some(tab => tab.children.length > 0);
+        break;
+
+      case 'outdent':
+        enabled = rootItems.some(tab => tab.ancestorTabIds.length > 0);
+        break;
+
+      default:
+        break;
+    }
+    if (definition.enabled != enabled)
+      changes.enabled = definition.enabled = enabled;
+
+    if (Object.keys(changes).length == 0)
       continue;
 
-    browser.menus.update(id, { visible });
-    definition.visible = visible;
+    browser.menus.update(id, changes);
     modified = true;
   }
   if (modified)
     browser.menus.refresh();
-}
+});
 
 browser.menus.onClicked.addListener(async (info, tab) => {
   // Extra context menu commands won't be available on the blank area of the tab bar.
@@ -181,6 +226,19 @@ async function getMultiselectedTabs(tab) {
     });
   else
     return [tab];
+}
+
+async function getTreeItems(tabs) {
+  return browser.runtime.sendMessage(TST_ID, {
+    type: 'get-tree',
+    tabs: tabs.map(tab => tab.id)
+  });
+}
+
+function collectRootItems(tabs) {
+  const allIds = tabs.map(tab => tab.id);
+  // extract only top level items
+  return tabs.filter(tab => new Set([...tab.ancestorTabIds, ...allIds]).size == tab.ancestorTabIds.length + allIds.length);
 }
 
 function group(tabs) {
