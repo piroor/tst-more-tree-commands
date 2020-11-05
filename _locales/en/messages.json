@@ -24,5 +24,7 @@
   "config_title": { "message": "TST More Tree Commands Options" },
 
   "config_contextMenuTopLevelCommand_label": { "message": "Visible command in the context menu" },
-  "config_contextMenuTopLevelCommand_all": { "message": "All (under a submenu)" }
+  "config_contextMenuTopLevelCommand_all": { "message": "All (under a submenu)" },
+
+  "config_cleanupGroupTabsAfterFlattenTree_label": { "message": "Clean up needless group tabs after a tree is flattened" }
 }

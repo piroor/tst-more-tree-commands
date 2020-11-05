@@ -24,5 +24,7 @@
   "config_title": { "message": "TST More Tree Commandsの設定" },
 
   "config_contextMenuTopLevelCommand_label": { "message": "コンテキストメニューで使う機能" },
-  "config_contextMenuTopLevelCommand_all": { "message": "すべて（サブメニューに表示）" }
+  "config_contextMenuTopLevelCommand_all": { "message": "すべて（サブメニューに表示）" },
+
+  "config_cleanupGroupTabsAfterFlattenTree_label": { "message": "ツリーを解除した後、不要なグループタブを自動的に閉じる" }
 }
