@@ -9,7 +9,7 @@ This provides extra commands to manipulate tree structure for the Tree Style Tab
 I'm finding successor developers of this project. I'm ready to transfer the ownership of this project to successors.
 
 I generally use TST without manual manipulation modifying the tree structure, instead I use TST mainly with automatically constructed tree.
-"Indent", "outdent", and more other tree manupilation commands are non-critical for my usecase, and I'm negative about adding more new tree manipulation commands to TST itself.
+"Indent", "outdent", and more other tree manipulation commands are non-critical for my usecase, and I'm negative about adding more new tree manipulation commands to TST itself.
 This is the reason why I decided to separate these features from TST to a helper addon.
 
 From the same reason, sorry but I have less motivation to develop and maintain this project.
