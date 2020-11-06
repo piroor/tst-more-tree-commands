@@ -14,4 +14,4 @@ This is the reason why I decided to separate these features from TST to a helper
 
 From the same reason, sorry but I have less motivation to develop and maintain this project.
 I believe that this project should be owned by someone who really want to use it.
-If you are interested in the ownership of this project, please contact me via the [issue tracker](https://github.com/piroor/tst-more-tree-commands/issues) or [email](mailto:piro.outsider.reflex@gmail.com).
+If you are interested to take the ownership of this project, please contact me via the [issue tracker](https://github.com/piroor/tst-more-tree-commands/issues) or [email](mailto:piro.outsider.reflex@gmail.com).
