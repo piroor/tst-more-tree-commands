@@ -1,0 +1,30 @@
+{
+  "extensionName": { "message": "TST More Tree Commands" },
+  "extensionDescription": { "message": "Дополнительные команды управления деревом для Tree Style Tab." },
+
+  "command_group":   { "message": "Создать группу из выбранных" },
+  "command_ungroup": { "message": "Разгруппировать вкладки" },
+  "command_flatten": { "message": "Сровнять подуровни" },
+  "command_indent":  { "message": "Отступ для текущей вкладки" },
+  "command_outdent": { "message": "Убрать отступ для текущей" },
+
+  "context_moreTreeCommands_label": { "message": "Команды дерева" },
+  "context_group_label":     { "message": "Создать группу из вкладок" },
+  "context_group_command":   { "message": "Создать группу из вкладок" },
+  "context_ungroup_label":   { "message": "Разгруппировать вкладки" },
+  "context_ungroup_command": { "message": "Разгруппировать вкладки" },
+  "context_flatten_label":   { "message": "Сровнять подуровни" },
+  "context_flatten_command": { "message": "Сровнять подуровни" },
+  "context_indent_label":    { "message": "Отступ текущей" },
+  "context_indent_command":  { "message": "Отступ текущей" },
+  "context_outdent_label":   { "message": "Убрать отступ текущей" },
+  "context_outdent_command": { "message": "Убрать отступ текущей" },
+
+
+  "config_title": { "message": "Настройки TST More Tree Commands" },
+
+  "config_contextMenuTopLevelCommand_label": { "message": "Команды в контекстном меню" },
+  "config_contextMenuTopLevelCommand_all": { "message": "Все команды в подменю" },
+
+  "config_cleanupGroupTabsAfterFlattenTree_label": { "message": "Удалять лишние групповые вкладки после сравнивания подуровней" }
+}
