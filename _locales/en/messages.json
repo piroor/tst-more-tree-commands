@@ -9,6 +9,9 @@
   "command_outdent": { "message": "Outdent Current Tab" },
   "command_toggle": { "message": "Toggle Collapsed State of Tree" },
 
+  "command_moveBeforePreviousSibling":  { "message": "Move Current Tab Before Previous Sibling" },
+  "command_moveAfterNextSibling": { "message": "Move Current Tab After Next Sibling" },
+
   "context_moreTreeCommands_label": { "message": "Operate Tree" },
   "context_group_label":     { "message": "Create New &Group from tabs" },
   "context_group_command":   { "message": "Create New Group from tabs" },
@@ -20,6 +23,10 @@
   "context_indent_command":  { "message": "Indent" },
   "context_outdent_label":   { "message": "&Outdent" },
   "context_outdent_command": { "message": "Outdent" },
+  "context_moveBeforePreviousSibling_label":    { "message": "Move &before previous sibling" },
+  "context_moveBeforePreviousSibling_command":  { "message": "Move before previous sibling" },
+  "context_moveAfterNextSibling_label":   { "message": "Move &after next sibling" },
+  "context_moveAfterNextSibling_command": { "message": "Move after next sibling" },
 
 
   "config_title": { "message": "TST More Tree Commands Options" },
