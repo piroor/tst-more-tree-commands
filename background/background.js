@@ -285,7 +285,7 @@ async function getMultiselectedTabs(tab) {
 }
 
 async function getTreeItems(tabs) {
-  return browser.runtime.sendMessage(TST_ID, {
+  return tabs.length < 1 ? [] : browser.runtime.sendMessage(TST_ID, {
     type: 'get-tree',
     tabs: tabs.map(tab => tab.id || tab)
   });
