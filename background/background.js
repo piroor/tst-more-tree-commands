@@ -60,6 +60,27 @@ const menuItemDefinitionsById = {
     visible:  true,
     enabled:  false
   },
+  separatorAfterIndentOutdent: {
+    parentId: 'topLevel_moreTreeCommands',
+    type:     'separator',
+    contexts: ['tab'],
+    visible:  true,
+    enabled:  true
+  },
+  moveBeforePreviousSibling: {
+    parentId: 'topLevel_moreTreeCommands',
+    title:    browser.i18n.getMessage('context_moveBeforePreviousSibling_label'),
+    contexts: ['tab'],
+    visible:  true,
+    enabled:  false
+  },
+  moveAfterNextSibling: {
+    parentId: 'topLevel_moreTreeCommands',
+    title:    browser.i18n.getMessage('context_moveAfterNextSibling_label'),
+    contexts: ['tab'],
+    visible:  true,
+    enabled:  false
+  },
 
   topLevel_group: {
     title:    browser.i18n.getMessage('context_group_label'),
@@ -90,6 +111,18 @@ const menuItemDefinitionsById = {
     contexts: ['tab'],
     visible:  false,
     enabled:  false
+  },
+  topLevel_moveBeforePreviousSibling: {
+    title:    browser.i18n.getMessage('context_moveBeforePreviousSibling_label'),
+    contexts: ['tab'],
+    visible:  false,
+    enabled:  false
+  },
+  topLevel_moveAfterNextSibling: {
+    title:    browser.i18n.getMessage('context_moveAfterNextSibling_label'),
+    contexts: ['tab'],
+    visible:  false,
+    enabled:  false
   }
 };
 for (const [id, definition] of Object.entries(menuItemDefinitionsById)) {
@@ -110,6 +143,7 @@ browser.menus.onShown.addListener(async (info, tab) => {
   const miltiselectedTabs = await getMultiselectedTabs(tab);
   const treeItems = await getTreeItems(miltiselectedTabs);
   const rootItems = collectRootItems(treeItems);
+  await annotateWithSiblings(treeItems);
   console.log({miltiselectedTabs, treeItems, rootItems});
 
   let modified = false;
@@ -142,6 +176,14 @@ browser.menus.onShown.addListener(async (info, tab) => {
         enabled = rootItems.some(tab => tab.ancestorTabIds.length > 0);
         break;
 
+      case 'moveBeforePreviousSibling':
+        enabled = treeItems.some(tab => tab.previousSibling != null);
+        break;
+
+      case 'moveAfterNextSibling':
+        enabled = treeItems.some(tab => tab.nextSibling != null);
+        break;
+
       default:
         break;
     }
@@ -167,20 +209,27 @@ browser.menus.onClicked.addListener(async (info, tab) => {
 
   switch (info.menuItemId.replace(/^topLevel_/, '')) {
     case 'group':
-      group(miltiselectedTabs);
+      await group(miltiselectedTabs);
       return;
     case 'ungroup':
-      ungroup(miltiselectedTabs);
+      await ungroup(miltiselectedTabs);
       return;
     case 'flatten':
-      flatten(miltiselectedTabs);
+      await flatten(miltiselectedTabs);
       return;
 
     case 'indent':
-      indent(miltiselectedTabs);
+      await indent(miltiselectedTabs);
       return;
     case 'outdent':
-      outdent(miltiselectedTabs);
+      await outdent(miltiselectedTabs);
+      return;
+
+    case 'moveBeforePreviousSibling':
+      await moveBeforePreviousSibling(miltiselectedTabs);
+      return;
+    case 'moveAfterNextSibling':
+      await moveAfterNextSibling(miltiselectedTabs);
       return;
 
     default:
@@ -198,20 +247,27 @@ browser.commands.onCommand.addListener(async command => {
 
   switch (command) {
     case 'group':
-      group(miltiselectedTabs);
+      await group(miltiselectedTabs);
       return;
     case 'ungroup':
-      ungroup(miltiselectedTabs);
+      await ungroup(miltiselectedTabs);
       return;
     case 'flatten':
-      flatten(miltiselectedTabs);
+      await flatten(miltiselectedTabs);
       return;
 
     case 'indent':
-      indent(miltiselectedTabs);
+      await indent(miltiselectedTabs);
       return;
     case 'outdent':
-      outdent(miltiselectedTabs);
+      await outdent(miltiselectedTabs);
+      return;
+
+    case 'moveBeforePreviousSibling':
+      await moveBeforePreviousSibling(miltiselectedTabs);
+      return;
+    case 'moveAfterNextSibling':
+      await moveAfterNextSibling(miltiselectedTabs);
       return;
   }
 });
@@ -231,7 +287,7 @@ async function getMultiselectedTabs(tab) {
 async function getTreeItems(tabs) {
   return browser.runtime.sendMessage(TST_ID, {
     type: 'get-tree',
-    tabs: tabs.map(tab => tab.id)
+    tabs: tabs.map(tab => tab.id || tab)
   });
 }
 
@@ -241,9 +297,42 @@ function collectRootItems(tabs) {
   return tabs.filter(tab => new Set([...tab.ancestorTabIds, ...allIds]).size == tab.ancestorTabIds.length + allIds.length);
 }
 
-function group(tabs) {
+async function annotateWithSiblings(treeItems) {
+  if (treeItems.length < 1) {
+    return;
+  }
+  const windowId = treeItems[0].windowId;
+
+  const parentTabIds = new Set(treeItems.flatMap(treeItem => treeItem.ancestorTabIds.slice(0, 1)));
+  const parentTreeItems = new Map((await getTreeItems([...parentTabIds])).map(treeItem => [treeItem.id, treeItem]));
+  let rootTreeItems = null;
+
+  for (const treeItem of treeItems) {
+    let siblingTreeItems;
+
+    if (treeItem.ancestorTabIds.length > 0) {
+      const parentTabId = treeItem.ancestorTabIds[0];
+      const parentTreeItem = parentTreeItems.get(parentTabId);
+      siblingTreeItems = parentTreeItem.children;
+    } else {
+      if (rootTreeItems === null) {
+        rootTreeItems = await browser.runtime.sendMessage(TST_ID, {
+          type: 'get-tree',
+          window: windowId
+        });
+      }
+      siblingTreeItems = rootTreeItems;
+    }
+
+    const tabIndex = siblingTreeItems.findIndex(siblingTreeItem => siblingTreeItem.id === treeItem.id);
+    treeItem.previousSibling = tabIndex > 0 ? siblingTreeItems[tabIndex - 1] : null;
+    treeItem.nextSibling = tabIndex < siblingTreeItems.length - 1 ? siblingTreeItems[tabIndex + 1] : null;
+  }
+}
+
+async function group(tabs) {
   if (tabs.length > 1)
-    browser.runtime.sendMessage(TST_ID, {
+    await browser.runtime.sendMessage(TST_ID, {
       type: 'group-tabs' ,
       tabs: tabs.map(tab => tab.id)
     });
@@ -338,18 +427,59 @@ async function flattenInternal(tabs, { targetTabIds, shouldDetachAll, recursivel
   }
 }
 
-function indent(tabs) {
-  browser.runtime.sendMessage(TST_ID, {
+async function indent(tabs) {
+  await browser.runtime.sendMessage(TST_ID, {
     type:           'indent' ,
     tab:            tabs[0].id,
     followChildren: true
   });
 }
 
-function outdent(tabs) {
-  browser.runtime.sendMessage(TST_ID, {
+async function outdent(tabs) {
+  await browser.runtime.sendMessage(TST_ID, {
     type:           'outdent' ,
     tab:            tabs[0].id,
     followChildren: true
   });
+}
+
+async function moveBeforePreviousSibling(tabs) {
+  const treeItems = await getTreeItems(tabs);
+  await annotateWithSiblings(treeItems);
+
+  for (const treeItem of treeItems) {
+    if (treeItem.previousSibling != null) {
+      await browser.runtime.sendMessage(TST_ID, {
+        type:           'move-before' ,
+        tab:            treeItem.id,
+        referenceTabId: treeItem.previousSibling.id,
+        followChildren: true
+      });
+    }
+  }
+}
+
+async function moveAfterNextSibling(tabs) {
+  const treeItems = await getTreeItems(tabs);
+  await annotateWithSiblings(treeItems);
+
+  for (const treeItem of treeItems) {
+    if (treeItem.nextSibling != null) {
+      let nextSiblingTreeItem = treeItem.nextSibling;
+      while (nextSiblingTreeItem.children.length > 0) {
+        nextSiblingTreeItem = nextSiblingTreeItem.children[nextSiblingTreeItem.children.length - 1];
+      }
+      const indentDelta = nextSiblingTreeItem.indent - treeItem.indent;
+
+      await browser.runtime.sendMessage(TST_ID, {
+        type:           'move-after' ,
+        tab:            treeItem.id,
+        referenceTabId: nextSiblingTreeItem.id,
+        followChildren: true
+      });
+      for (let i = 0; i < indentDelta; i++) {
+        await outdent([treeItem]);
+      }
+    }
+  }
 }
