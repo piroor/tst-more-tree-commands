@@ -213,6 +213,10 @@ browser.commands.onCommand.addListener(async command => {
     case 'outdent':
       outdent(miltiselectedTabs);
       return;
+
+    case 'toggle':
+      await toggle(miltiselectedTabs);
+      return;
   }
 });
 
@@ -352,4 +356,11 @@ function outdent(tabs) {
     tab:            tabs[0].id,
     followChildren: true
   });
+}
+
+async function toggle(tabs) {
+  await Promise.all(tabs.map(tab => browser.runtime.sendMessage(TST_ID, {
+    type: 'toggle-tree-collapsed',
+    tab: tab.id
+  })));
 }

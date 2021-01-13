@@ -7,6 +7,7 @@
   "command_flatten": { "message": "Flatten Tree" },
   "command_indent":  { "message": "Indent Current Tab" },
   "command_outdent": { "message": "Outdent Current Tab" },
+  "command_toggle": { "message": "Toggle Collapsed State of Tree" },
 
   "context_moreTreeCommands_label": { "message": "Operate Tree" },
   "context_group_label":     { "message": "Create New &Group from tabs" },

@@ -27,6 +27,9 @@
     },
     "outdent": {
       "description": "__MSG_command_outdent__"
+    },
+    "toggle": {
+      "description": "__MSG_command_toggle__"
     }
   },
   "options_ui": {
