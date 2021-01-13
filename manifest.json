@@ -27,6 +27,12 @@
     },
     "outdent": {
       "description": "__MSG_command_outdent__"
+    },
+    "moveBeforePreviousSibling": {
+      "description": "__MSG_command_moveBeforePreviousSibling__"
+    },
+    "moveAfterNextSibling": {
+      "description": "__MSG_command_moveAfterNextSibling__"
     }
   },
   "options_ui": {
