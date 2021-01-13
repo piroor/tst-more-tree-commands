@@ -33,6 +33,9 @@
     },
     "moveAfterNextSibling": {
       "description": "__MSG_command_moveAfterNextSibling__"
+    },
+    "toggle": {
+      "description": "__MSG_command_toggle__"
     }
   },
   "options_ui": {

@@ -7,6 +7,7 @@
   "command_flatten": { "message": "Flatten Tree" },
   "command_indent":  { "message": "Indent Current Tab" },
   "command_outdent": { "message": "Outdent Current Tab" },
+  "command_toggle": { "message": "Toggle Collapsed State of Tree" },
 
   "command_moveBeforePreviousSibling":  { "message": "Move Current Tab Before Previous Sibling" },
   "command_moveAfterNextSibling": { "message": "Move Current Tab After Next Sibling" },

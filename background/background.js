@@ -269,6 +269,10 @@ browser.commands.onCommand.addListener(async command => {
     case 'moveAfterNextSibling':
       await moveAfterNextSibling(miltiselectedTabs);
       return;
+
+    case 'toggle':
+      await toggle(miltiselectedTabs);
+      return;
   }
 });
 
@@ -441,6 +445,13 @@ async function outdent(tabs) {
     tab:            tabs[0].id,
     followChildren: true
   });
+}
+
+async function toggle(tabs) {
+  await Promise.all(tabs.map(tab => browser.runtime.sendMessage(TST_ID, {
+    type: 'toggle-tree-collapsed',
+    tab: tab.id
+  })));
 }
 
 async function moveBeforePreviousSibling(tabs) {
