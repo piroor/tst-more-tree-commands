@@ -7,6 +7,10 @@
   "command_flatten": { "message": "タブのツリーを解除" },
   "command_indent":  { "message": "現在のタブを1階層深くする" },
   "command_outdent": { "message": "現在のタブを1階層浅くする" },
+  "command_toggle": { "message": "ツリーを展開する/折りたたむ" },
+
+  "command_moveBeforePreviousSibling":  { "message": "現在のタブを同じ階層の前のタブの手前に移動" },
+  "command_moveAfterNextSibling": { "message": "現在のタブを同じ階層の次のタブの後に移動" },
 
   "context_moreTreeCommands_label": { "message": "ツリーの操作" },
   "context_group_label":     { "message": "これらのタブを新しいグループにする(&G)" },
@@ -19,6 +23,10 @@
   "context_indent_command":  { "message": "1階層深く" },
   "context_outdent_label":   { "message": "1階層浅く(&O)" },
   "context_outdent_command": { "message": "1階層浅く" },
+  "context_moveBeforePreviousSibling_label":    { "message": "同じ階層の前のタブの手前に移動(&B)" },
+  "context_moveBeforePreviousSibling_command":  { "message": "同じ階層の前のタブの手前に移動" },
+  "context_moveAfterNextSibling_label":   { "message": "同じ階層の次のタブの後に移動(&A)" },
+  "context_moveAfterNextSibling_command": { "message": "同じ階層の次のタブの後に移動" },
 
 
   "config_title": { "message": "TST More Tree Commandsの設定" },
