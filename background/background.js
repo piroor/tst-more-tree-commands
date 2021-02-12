@@ -143,8 +143,18 @@ browser.menus.onShown.addListener(async (info, tab) => {
   const miltiselectedTabs = await getMultiselectedTabs(tab);
   const treeItems = await getTreeItems(miltiselectedTabs);
   const rootItems = collectRootItems(treeItems);
-  await annotateWithSiblings(treeItems);
   console.log({miltiselectedTabs, treeItems, rootItems});
+
+  let previousSiblingItem, nextSiblingItem;
+  // The "Move Before/After Previous/Next Sibling" commands only support single
+  // selections (or else behavior would be unpredictable depending on the order
+  // of operations).
+  if (miltiselectedTabs.length === 1 && treeItems.length === 1) {
+    [previousSiblingItem, nextSiblingItem] = await Promise.all([
+      getRelatedTreeItem(tab, 'previousSibling'),
+      getRelatedTreeItem(tab, 'nextSibling')
+    ]);
+  }
 
   let modified = false;
   for (const [id, definition] of Object.entries(menuItemDefinitionsById)) {
@@ -177,11 +187,11 @@ browser.menus.onShown.addListener(async (info, tab) => {
         break;
 
       case 'moveBeforePreviousSibling':
-        enabled = treeItems.some(tab => tab.previousSibling != null);
+        enabled = previousSiblingItem != null;
         break;
 
       case 'moveAfterNextSibling':
-        enabled = treeItems.some(tab => tab.nextSibling != null);
+        enabled = nextSiblingItem != null;
         break;
 
       default:
@@ -226,10 +236,14 @@ browser.menus.onClicked.addListener(async (info, tab) => {
       return;
 
     case 'moveBeforePreviousSibling':
-      await moveBeforePreviousSibling(miltiselectedTabs);
+      if (miltiselectedTabs.length === 1) {
+        await moveBeforePreviousSibling(tab);
+      }
       return;
     case 'moveAfterNextSibling':
-      await moveAfterNextSibling(miltiselectedTabs);
+      if (miltiselectedTabs.length === 1) {
+        await moveAfterNextSibling(tab);
+      }
       return;
 
     default:
@@ -237,13 +251,13 @@ browser.menus.onClicked.addListener(async (info, tab) => {
   }
 });
 
-
 browser.commands.onCommand.addListener(async command => {
   const activeTabs = await browser.tabs.query({
     active:        true,
     currentWindow: true
   });
-  const miltiselectedTabs = await getMultiselectedTabs(activeTabs[0]);
+  const activeTab = activeTabs[0];
+  const miltiselectedTabs = await getMultiselectedTabs(activeTab);
 
   switch (command) {
     case 'group':
@@ -264,10 +278,14 @@ browser.commands.onCommand.addListener(async command => {
       return;
 
     case 'moveBeforePreviousSibling':
-      await moveBeforePreviousSibling(miltiselectedTabs);
+      if (miltiselectedTabs.length === 1) {
+        await moveBeforePreviousSibling(activeTab);
+      }
       return;
     case 'moveAfterNextSibling':
-      await moveAfterNextSibling(miltiselectedTabs);
+      if (miltiselectedTabs.length === 1) {
+        await moveAfterNextSibling(activeTab);
+      }
       return;
 
     case 'toggle':
@@ -291,7 +309,14 @@ async function getMultiselectedTabs(tab) {
 async function getTreeItems(tabs) {
   return tabs.length < 1 ? [] : browser.runtime.sendMessage(TST_ID, {
     type: 'get-tree',
-    tabs: tabs.map(tab => tab.id || tab)
+    tabs: tabs.map(tab => tab.id)
+  });
+}
+
+async function getRelatedTreeItem(tab, relation) {
+  return browser.runtime.sendMessage(TST_ID, {
+    type: 'get-tree',
+    tab: `${relation}-of-${tab.id}`
   });
 }
 
@@ -301,43 +326,25 @@ function collectRootItems(tabs) {
   return tabs.filter(tab => new Set([...tab.ancestorTabIds, ...allIds]).size == tab.ancestorTabIds.length + allIds.length);
 }
 
-async function annotateWithSiblings(treeItems) {
-  if (treeItems.length < 1) {
-    return;
+function collectDescendantItems(treeItems) {
+  const descendantItems = [...treeItems];
+  let currentIndex = 0;
+  while (currentIndex < descendantItems.length) {
+    const currentItem = descendantItems[currentIndex++];
+    // Splicing in the children immediately after the current tree item results
+    // in a depth-first ordering. Pushing all children to the end would instead
+    // result in a breadth-first ordering. Because various TST commands (like
+    // move-to-end) expect a depth-first ordering of tabs, we prefer the former
+    // here.
+    descendantItems.splice(currentIndex, 0, ...currentItem.children);
   }
-  const windowId = treeItems[0].windowId;
-
-  const parentTabIds = new Set(treeItems.flatMap(treeItem => treeItem.ancestorTabIds.slice(0, 1)));
-  const parentTreeItems = new Map((await getTreeItems([...parentTabIds])).map(treeItem => [treeItem.id, treeItem]));
-  let rootTreeItems = null;
-
-  for (const treeItem of treeItems) {
-    let siblingTreeItems;
-
-    if (treeItem.ancestorTabIds.length > 0) {
-      const parentTabId = treeItem.ancestorTabIds[0];
-      const parentTreeItem = parentTreeItems.get(parentTabId);
-      siblingTreeItems = parentTreeItem.children;
-    } else {
-      if (rootTreeItems === null) {
-        rootTreeItems = await browser.runtime.sendMessage(TST_ID, {
-          type: 'get-tree',
-          window: windowId
-        });
-      }
-      siblingTreeItems = rootTreeItems;
-    }
-
-    const tabIndex = siblingTreeItems.findIndex(siblingTreeItem => siblingTreeItem.id === treeItem.id);
-    treeItem.previousSibling = tabIndex > 0 ? siblingTreeItems[tabIndex - 1] : null;
-    treeItem.nextSibling = tabIndex < siblingTreeItems.length - 1 ? siblingTreeItems[tabIndex + 1] : null;
-  }
+  return descendantItems;
 }
 
 async function group(tabs) {
   if (tabs.length > 1)
     await browser.runtime.sendMessage(TST_ID, {
-      type: 'group-tabs' ,
+      type: 'group-tabs',
       tabs: tabs.map(tab => tab.id)
     });
 }
@@ -433,7 +440,7 @@ async function flattenInternal(tabs, { targetTabIds, shouldDetachAll, recursivel
 
 async function indent(tabs) {
   await browser.runtime.sendMessage(TST_ID, {
-    type:           'indent' ,
+    type:           'indent',
     tab:            tabs[0].id,
     followChildren: true
   });
@@ -441,7 +448,7 @@ async function indent(tabs) {
 
 async function outdent(tabs) {
   await browser.runtime.sendMessage(TST_ID, {
-    type:           'outdent' ,
+    type:           'outdent',
     tab:            tabs[0].id,
     followChildren: true
   });
@@ -454,43 +461,71 @@ async function toggle(tabs) {
   })));
 }
 
-async function moveBeforePreviousSibling(tabs) {
-  const treeItems = await getTreeItems(tabs);
-  await annotateWithSiblings(treeItems);
+async function moveBefore(tab, referenceTab) {
+  await browser.runtime.sendMessage(TST_ID, {
+    type:           'move-before',
+    tab:            tab.id,
+    referenceTabId: referenceTab.id,
+    followChildren: true
+  });
+}
 
-  for (const treeItem of treeItems) {
-    if (treeItem.previousSibling != null) {
-      await browser.runtime.sendMessage(TST_ID, {
-        type:           'move-before' ,
-        tab:            treeItem.id,
-        referenceTabId: treeItem.previousSibling.id,
-        followChildren: true
-      });
-    }
+async function moveToEnd(tabs) {
+  await browser.runtime.sendMessage(TST_ID, {
+    type: 'move-to-end',
+    tabs: tabs.map(tab => tab.id)
+  });
+}
+
+async function moveBeforePreviousSibling(tab) {
+  const previousSiblingItem = await getRelatedTreeItem(tab, 'previousSibling');
+  if (previousSiblingItem != null) {
+    await moveBefore(tab, previousSiblingItem);
   }
 }
 
-async function moveAfterNextSibling(tabs) {
-  const treeItems = await getTreeItems(tabs);
-  await annotateWithSiblings(treeItems);
+async function moveAfterNextSibling(tab) {
+  const nextSiblingItem = await getRelatedTreeItem(tab, 'nextSibling');
+  if (nextSiblingItem == null) {
+    return;
+  }
 
-  for (const treeItem of treeItems) {
-    if (treeItem.nextSibling != null) {
-      let nextSiblingTreeItem = treeItem.nextSibling;
-      while (nextSiblingTreeItem.children.length > 0) {
-        nextSiblingTreeItem = nextSiblingTreeItem.children[nextSiblingTreeItem.children.length - 1];
-      }
-      const indentDelta = nextSiblingTreeItem.indent - treeItem.indent;
+  // Naively telling TST to move the tab after its next sibling produces
+  // unexpected tree structures.
 
-      await browser.runtime.sendMessage(TST_ID, {
-        type:           'move-after' ,
-        tab:            treeItem.id,
-        referenceTabId: nextSiblingTreeItem.id,
-        followChildren: true
-      });
-      for (let i = 0; i < indentDelta; i++) {
-        await outdent([treeItem]);
-      }
-    }
+  // In most cases, we move-before the next sibling of the tab's next sibling
+  // instead.
+  const nextNextSiblingItem = await getRelatedTreeItem(nextSiblingItem, 'nextSibling');
+  if (nextNextSiblingItem != null) {
+    return moveBefore(tab, nextNextSiblingItem);
+  }
+
+  let newIndentationLevel = 0;
+  const desiredIndentationLevel = nextSiblingItem.indent;
+
+  // Otherwise, we look for the next tab after the tab's next sibling's last
+  // descendant.
+  let nextSiblingLastDescendantItem = nextSiblingItem;
+  while (nextSiblingLastDescendantItem.children.length > 0) {
+    nextSiblingLastDescendantItem = nextSiblingLastDescendantItem.children[nextSiblingLastDescendantItem.children.length - 1];
+  }
+  const nextOfNextSiblingLastDescendantItem = await getRelatedTreeItem(nextSiblingLastDescendantItem, 'next');
+  if (nextOfNextSiblingLastDescendantItem != null) {
+    await moveBefore(tab, nextOfNextSiblingLastDescendantItem);
+    newIndentationLevel = nextOfNextSiblingLastDescendantItem.indent;
+  } else {
+    // If there's no tab following the tab's next sibling's last descendant, then
+    // we can do a move-to-end to get what we want.
+    const treeItems = await getTreeItems([tab]);
+    await moveToEnd(collectDescendantItems(treeItems));
+  }
+
+  // Doing a move-before moves the tab to the indentation level of the reference
+  // tab; similarly, a move-to-end deindents the tab entirely. We do a series of
+  // indents here to shift the tab back to the indentation level of its next
+  // sibling.
+  const deltaIndentationLevel = desiredIndentationLevel - newIndentationLevel;
+  for (let i = 0; i < deltaIndentationLevel; i++) {
+    await indent([tab]);
   }
 }
