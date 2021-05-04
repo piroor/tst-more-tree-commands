@@ -8,8 +8,8 @@
   "command_indent":  { "message": "現在のタブを1階層深くする" },
   "command_outdent": { "message": "現在のタブを1階層浅くする" },
   "command_toggle": { "message": "ツリーを展開する/折りたたむ" },
-  "command_tabbarLinesUp": { "message": "タブの一覧を何行か下にスクロール" },
-  "command_tabbarLinesDown": { "message": "タブの一覧を何行か下にスクロール" },
+  "command_tabbarLinesUp": { "message": "タブの一覧を数行下にスクロール" },
+  "command_tabbarLinesDown": { "message": "タブの一覧を数行下にスクロール" },
 
   "command_moveBeforePreviousSibling":  { "message": "現在のタブを同じ階層の前のタブの手前に移動" },
   "command_moveAfterNextSibling": { "message": "現在のタブを同じ階層の次のタブの後に移動" },
@@ -36,8 +36,8 @@
   "config_contextMenuTopLevelCommand_label": { "message": "コンテキストメニューで使う機能" },
   "config_contextMenuTopLevelCommand_all": { "message": "すべて（サブメニューに表示）" },
 
-  "config_tabbarScrollLines_label_before": { "message": "キーボードショートカットの「タブの一覧を何行か上/下にスクロール」で" },
-  "config_tabbarScrollLines_label_after":  { "message": "行分スクロールする" },
+  "config_tabbarScrollLines_label_before": { "message": "キーボードショートカットの「タブの一覧を数行上/下にスクロール」で" },
+  "config_tabbarScrollLines_label_after":  { "message": "行分スクロールする（TST本体のショートカットとは別に制御されます）" },
 
   "config_cleanupGroupTabsAfterFlattenTree_label": { "message": "ツリーを解除した後、不要なグループタブを自動的に閉じる" }
 }

@@ -37,7 +37,7 @@
   "config_contextMenuTopLevelCommand_all": { "message": "All (under a submenu)" },
 
   "config_tabbarScrollLines_label_before": { "message": "Scroll up or down " },
-  "config_tabbarScrollLines_label_after":  { "message": "lines via \"Scroll Tabs Up/Down by Some Lines\" shortcut commands" },
+  "config_tabbarScrollLines_label_after":  { "message": "lines via \"Scroll Tabs Up/Down by Some Lines\" shortcut commands (*This does not affect to TST's built-in shortcuts)" },
 
   "config_cleanupGroupTabsAfterFlattenTree_label": { "message": "Clean up needless group tabs after a tree is flattened" }
 }
