@@ -10,6 +10,7 @@
   "command_toggle": { "message": "Toggle Collapsed State of Tree" },
   "command_tabbarLinesUp": { "message": "Scroll Tabs Up by Some Lines" },
   "command_tabbarLinesDown": { "message": "Scroll Tabs Down by Some Lines" },
+  "command_tabbarStopScroll": { "message": "Cancel In-Progress Scroll of Tabs" },
 
   "command_moveBeforePreviousSibling":  { "message": "Move Current Tab Before Previous Sibling" },
   "command_moveAfterNextSibling": { "message": "Move Current Tab After Next Sibling" },

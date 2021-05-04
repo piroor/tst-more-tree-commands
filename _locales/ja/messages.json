@@ -10,6 +10,7 @@
   "command_toggle": { "message": "ツリーを展開する/折りたたむ" },
   "command_tabbarLinesUp": { "message": "タブの一覧を数行下にスクロール" },
   "command_tabbarLinesDown": { "message": "タブの一覧を数行下にスクロール" },
+  "command_tabbarStopScroll": { "message": "進行中のタブのスクロールをキャンセルする" },
 
   "command_moveBeforePreviousSibling":  { "message": "現在のタブを同じ階層の前のタブの手前に移動" },
   "command_moveAfterNextSibling": { "message": "現在のタブを同じ階層の次のタブの後に移動" },

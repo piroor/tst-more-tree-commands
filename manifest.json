@@ -40,6 +40,9 @@
     "tabbarLinesUp": {
       "description": "__MSG_command_tabbarLinesUp__"
     },
+    "tabbarStopScroll": {
+      "description": "__MSG_command_tabbarStopScroll__"
+    },
     "toggle": {
       "description": "__MSG_command_toggle__"
     }

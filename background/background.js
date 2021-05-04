@@ -306,6 +306,13 @@ browser.commands.onCommand.addListener(async command => {
       });
       return;
 
+    case 'tabbarStopScroll':
+      browser.runtime.sendMessage(TST_ID, {
+        type:   'stop-scroll',
+        window: 'active',
+      });
+      return;
+
     case 'toggle':
       await toggle(miltiselectedTabs);
       return;
