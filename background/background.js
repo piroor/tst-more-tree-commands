@@ -288,6 +288,22 @@ browser.commands.onCommand.addListener(async command => {
       }
       return;
 
+    case 'tabbarLinesDown':
+      browser.runtime.sendMessage(TST_ID, {
+        type:   'scroll',
+        window: 'active',
+        delta:  `var(--tab-size) * ${configs.tabbarScrollLines}`,
+      });
+      return;
+
+    case 'tabbarLinesUp':
+      browser.runtime.sendMessage(TST_ID, {
+        type:   'scroll',
+        window: 'active',
+        delta:  `0px - var(--tab-size) * ${configs.tabbarScrollLines}`,
+      });
+      return;
+
     case 'toggle':
       await toggle(miltiselectedTabs);
       return;

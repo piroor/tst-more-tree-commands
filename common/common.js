@@ -10,6 +10,8 @@ import Configs from '/extlib/Configs.js';
 export const configs = new Configs({
   contextMenuTopLevelCommand: 'moreTreeCommands',
 
+  tabbarScrollLines: 3,
+
   cleanupGroupTabsAfterFlattenTree: true
 }, {
   localKeys: [

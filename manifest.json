@@ -34,6 +34,12 @@
     "moveAfterNextSibling": {
       "description": "__MSG_command_moveAfterNextSibling__"
     },
+    "tabbarLinesDown": {
+      "description": "__MSG_command_tabbarLinesDown__"
+    },
+    "tabbarLinesUp": {
+      "description": "__MSG_command_tabbarLinesUp__"
+    },
     "toggle": {
       "description": "__MSG_command_toggle__"
     }
