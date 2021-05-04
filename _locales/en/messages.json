@@ -39,5 +39,8 @@
   "config_tabbarScrollLines_label_before": { "message": "Scroll up or down " },
   "config_tabbarScrollLines_label_after":  { "message": "lines via \"Scroll Tabs Up/Down by Some Lines\" shortcut commands (*This does not affect to TST's built-in shortcuts)" },
 
+  "config_tabbarScrollDuration_label_before": { "message": "within " },
+  "config_tabbarScrollDuration_label_after":  { "message": "msec." },
+
   "config_cleanupGroupTabsAfterFlattenTree_label": { "message": "Clean up needless group tabs after a tree is flattened" }
 }

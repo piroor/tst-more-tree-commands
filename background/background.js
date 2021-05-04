@@ -293,6 +293,7 @@ browser.commands.onCommand.addListener(async command => {
         type:   'scroll',
         window: 'active',
         delta:  `var(--tab-size) * ${configs.tabbarScrollLines}`,
+        duration: configs.tabbarScrollDuration,
       });
       return;
 
@@ -301,6 +302,7 @@ browser.commands.onCommand.addListener(async command => {
         type:   'scroll',
         window: 'active',
         delta:  `0px - var(--tab-size) * ${configs.tabbarScrollLines}`,
+        duration: configs.tabbarScrollDuration,
       });
       return;
 

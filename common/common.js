@@ -11,6 +11,7 @@ export const configs = new Configs({
   contextMenuTopLevelCommand: 'moreTreeCommands',
 
   tabbarScrollLines: 3,
+  tabbarScrollDuration: 150,
 
   cleanupGroupTabsAfterFlattenTree: true
 }, {
