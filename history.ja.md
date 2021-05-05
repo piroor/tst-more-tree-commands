@@ -1,6 +1,9 @@
 # 更新履歴
 
  - master/HEAD
+ - 1.3 (2021.05.05)
+   * スクロール量とアニメーションにかける時間をカスタマイズ可能な、サイドバーを指定行数だけ上下にスクロールするショートカットコマンドを追加
+   * 進行中のスクロールを中断するショートカットコマンドを追加
  - 1.2 (2021.02.12)
    * [「次の同階層のタブの後に移動する」コマンドでの不要なツリーの展開を抑制するようにした](https://github.com/piroor/tst-more-tree-commands/pull/7)（[by @spinda](https://github.com/spinda). Thanks!）
    * `ru`ロケール更新（by [wvxwxvw](https://github.com/wvxwxvw), thanks!）

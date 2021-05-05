@@ -1,6 +1,9 @@
 # History
 
  - master/HEAD
+ - 1.3 (2021.05.05)
+   * Add custom shortcut commands to scroll up/down the sidebar by some lines, with customizable number of lines and animation duration.
+   * Add a custom shortcut command to stop in-progress scroll of the sidebar.
  - 1.2 (2021.02.12)
    * [Suppress needless expansion of trees on the "move after next sibling" command](https://github.com/piroor/tst-more-tree-commands/pull/7) [by @spinda](https://github.com/spinda). Thanks!
    * Update `ru` locale by [wvxwxvw](https://github.com/wvxwxvw). Thanks!
