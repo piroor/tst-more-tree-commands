@@ -8,6 +8,9 @@
   "command_indent":  { "message": "Отступ для текущей" },
   "command_outdent": { "message": "Убрать отступ" },
   "command_toggle": { "message": "Свернуть / развернуть" },
+  "command_tabbarLinesUp": { "message": "Прокрутить вверх" },
+  "command_tabbarLinesDown": { "message": "Прокрутить вниз" },
+  "command_tabbarStopScroll": { "message": "Отмена прокрутки в процессе работы" },
 
   "command_moveBeforePreviousSibling":  { "message": "Выше в дереве" },
   "command_moveAfterNextSibling": { "message": "Ниже в дереве" },
@@ -33,6 +36,12 @@
 
   "config_contextMenuTopLevelCommand_label": { "message": "Команды в контекстном меню" },
   "config_contextMenuTopLevelCommand_all": { "message": "Все команды в подменю" },
+
+  "config_tabbarScrollLines_label_before": { "message": "Прокручивать вверх или вниз на " },
+  "config_tabbarScrollLines_label_after":  { "message": " строк командами \"Прокрутить вверх / вниз\" ( * Это не влияет на встроенные команды TST)" },
+
+  "config_tabbarScrollDuration_label_before": { "message": "в течение " },
+  "config_tabbarScrollDuration_label_after":  { "message": "мс" },
 
   "config_cleanupGroupTabsAfterFlattenTree_label": { "message": "Удалять лишние групповые вкладки после сравнивания подуровней" }
 }
