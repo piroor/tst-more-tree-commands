@@ -1,6 +1,6 @@
 # TST More Tree Commands
 
-[![Build Status](https://travis-ci.org/piroor/tst-more-tree-commands.svg?branch=trunk)](https://travis-ci.org/piroor/tst-more-tree-commands)
+![Build Status](https://github.com/piroor/tst-more-tree-commands/actions/workflows/main.yml/badge.svg?branch=trunk)
 
 This provides extra commands to manipulate tree structure for the Tree Style Tab addon. The installable package is downloadable at the [Mozilla Add-ons website](https://addons.mozilla.org/firefox/addon/tst-more-tree-commands/).
 
