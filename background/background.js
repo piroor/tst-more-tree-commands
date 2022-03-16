@@ -171,7 +171,7 @@ browser.menus.onShown.addListener(async (info, tab) => {
     let enabled;
     switch (name) {
       case 'group':
-        enabled = miltiselectedTabs.length > 1;
+        enabled = !treeItems.some(tab => tab.states.includes('group-tab'));
         break;
 
       case 'ungroup':
@@ -218,9 +218,15 @@ browser.menus.onClicked.addListener(async (info, tab) => {
   const miltiselectedTabs = await getMultiselectedTabs(tab);
 
   switch (info.menuItemId.replace(/^topLevel_/, '')) {
-    case 'group':
-      await group(miltiselectedTabs);
-      return;
+    case 'group': {
+      if (miltiselectedTabs.length > 1) {
+        await group(miltiselectedTabs);
+      } else {
+        const treeItems = await getTreeItems(miltiselectedTabs);
+        const descendantItems = collectDescendantItems(treeItems);
+        await group(descendantItems);
+      }
+    }
     case 'ungroup':
       await ungroup(miltiselectedTabs);
       return;
@@ -367,7 +373,7 @@ function collectDescendantItems(treeItems) {
 }
 
 async function group(tabs) {
-  if (tabs.length > 1)
+  if (tabs.length >= 1)
     await browser.runtime.sendMessage(TST_ID, {
       type: 'group-tabs',
       tabs: tabs.map(tab => tab.id)
