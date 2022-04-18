@@ -11,6 +11,35 @@ import {
 
 const TST_ID = 'treestyletab@piro.sakura.ne.jp';
 
+
+async function registerToTST() {
+  try {
+    const base = `moz-extension://${location.host}`;
+    await browser.runtime.sendMessage(TST_ID, {
+      type: 'register-self',
+      name: browser.i18n.getMessage('extensionName'),
+      //icons: browser.runtime.getManifest().icons,
+    });
+  }
+  catch(_error) {
+    // TST is not available
+  }
+}
+registerToTST();
+
+browser.runtime.onMessageExternal.addListener((message, sender) => {
+  switch (sender.id) {
+    case TST_ID:
+      switch (message.type) {
+        case 'ready':
+          registerToTST();
+          break;
+      }
+      break;
+  }
+});
+
+
 const menuItemDefinitionsById = {
   topLevel_moreTreeCommands: {
     title:    browser.i18n.getMessage('context_moreTreeCommands_label'),
