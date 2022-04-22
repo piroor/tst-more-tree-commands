@@ -1,6 +1,10 @@
 # History
 
  - master/HEAD
+ - 1.4 (2022.04.22)
+   * Register self to TST to allow receiving full tab information on private windows via API.
+   * Activate "Create group" command for single tab also ([by emvaized](https://github.com/piroor/tst-more-tree-commands/pull/18), thanks!)
+   * Update `ru` locale by [wvxwxvw](https://github.com/wvxwxvw). Thanks!
  - 1.3 (2021.05.05)
    * Add custom shortcut commands to scroll up/down the sidebar by some lines, with customizable number of lines and animation duration.
    * Add a custom shortcut command to stop in-progress scroll of the sidebar.
