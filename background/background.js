@@ -200,7 +200,7 @@ browser.menus.onShown.addListener(async (info, tab) => {
     let enabled;
     switch (name) {
       case 'group':
-        enabled = !treeItems.some(tab => tab.states.includes('group-tab'));
+        enabled = miltiselectedTabs.length > 1 || !treeItems.some(tab => tab.states.includes('group-tab'));
         break;
 
       case 'ungroup':
@@ -255,6 +255,7 @@ browser.menus.onClicked.addListener(async (info, tab) => {
         const descendantItems = collectDescendantItems(treeItems);
         await group(descendantItems);
       }
+      return;
     }
     case 'ungroup':
       await ungroup(miltiselectedTabs);
