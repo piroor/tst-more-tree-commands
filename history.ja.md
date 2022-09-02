@@ -1,6 +1,7 @@
 # 更新履歴
 
  - master/HEAD
+   * 選択されたタブの中に既存のグループタブが含まれている場合に「これらのタブを新しいグループにする」を使用できなくなっていたのを修正（[by emvaized](https://github.com/piroor/tst-more-tree-commands/pull/18), thanks!）
  - 1.4 (2022.04.22)
    * プライベートウィンドウのタブの完全な情報をAPI経由で受信できるようにするために、自身をTSTに登録するようにした
    * 「これらのタブを新しいグループにする」を単独のタブに対しても実行できるようにした（[by emvaized](https://github.com/piroor/tst-more-tree-commands/pull/18), thanks!）
