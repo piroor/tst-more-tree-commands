@@ -19,7 +19,22 @@ async function registerToTST() {
       type: 'register-self',
       name: browser.i18n.getMessage('extensionName'),
       //icons: browser.runtime.getManifest().icons,
+      listeningTypes: [
+        'ready',
+        'sidebar-show',
+        'extra-contents-change',
+        'extra-contents-keyup',
+        'extra-contents-compositionstart',
+        'extra-contents-compositionupdate',
+        'extra-contents-compositionend',
+      ],
+      style: `
+        ::part(%EXTRA_CONTENTS_PART% search-field) {
+          width: 100%;
+        }
+      `,
     });
+    initInputField();
   }
   catch(_error) {
     // TST is not available
@@ -34,10 +49,67 @@ browser.runtime.onMessageExternal.addListener((message, sender) => {
         case 'ready':
           registerToTST();
           break;
+
+        case 'sidebar-show':
+          initInputField();
+          break;
+
+        case 'extra-contents-change':
+        case 'extra-contents-keyup':
+        case 'extra-contents-compositionstart':
+        case 'extra-contents-compositionupdate':
+        case 'extra-contents-compositionend':
+          console.log(message);
+          if (message.originalTarget &&
+              message.originalTarget.startsWith('<input')) {
+            let input = (message.fieldValue || '').toLowerCase();
+            if (message.key == 'Escape') {
+              browser.runtime.sendMessage(TST_ID, {
+                type:       'set-extra-contents-properties',
+                place:      'tabbar-bottom',
+                part:       'search-field',
+                properties: {
+                  value: '',
+                },
+              });
+              input = '';
+            }
+            browser.tabs.query({ windowId: message.windowId }).then(tabs => {
+              const showTabIds = [],
+                    hideTabIds = [];
+              if (input) {
+                for (const tab of tabs) {
+                  const matched = `${tab.title} ${tab.url}`.toLowerCase().includes(input);
+                  if (tab.hidden != matched)
+                    continue;
+                  if (matched)
+                    showTabIds.push(tab.id);
+                  else
+                    hideTabIds.push(tab.id);
+                }
+              }
+              else {
+                showTabIds.push.apply(showTabIds, tabs.filter(tab => tab.hidden).map(tab => tab.id));
+              }
+              if (showTabIds.length > 0)
+                browser.tabs.show(showTabIds);
+              if (hideTabIds.length > 0)
+                browser.tabs.hide(hideTabIds);
+            });
+          }
+          break;
       }
       break;
   }
 });
+
+async function initInputField() {
+  browser.runtime.sendMessage(TST_ID, {
+    type: 'set-extra-contents',
+    place: 'tabbar-bottom',
+    contents: `<input type="text" id="search-field" part="search-field">`,
+  });
+}
 
 
 const menuItemDefinitionsById = {
