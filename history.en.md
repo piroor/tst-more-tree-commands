@@ -1,7 +1,8 @@
 # History
 
  - master/HEAD
-   * Activate "Create group" command for tabs even if any other group tab ins in the selection ([by emvaized](https://github.com/piroor/tst-more-tree-commands/pull/18), thanks!)
+ - 1.5 (2022.09.12)
+   * Activate "Create group" command for tabs even if any other group tab is in the selection ([by emvaized](https://github.com/piroor/tst-more-tree-commands/pull/18), thanks!)
  - 1.4 (2022.04.22)
    * Register self to TST to allow receiving full tab information on private windows via API.
    * Activate "Create group" command for single tab also ([by emvaized](https://github.com/piroor/tst-more-tree-commands/pull/18), thanks!)
