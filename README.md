@@ -2,7 +2,10 @@
 
 ![Build Status](https://github.com/piroor/tst-more-tree-commands/actions/workflows/main.yml/badge.svg?branch=trunk)
 
-This provides extra commands to manipulate tree structure for the Tree Style Tab addon. The installable package is downloadable at the [Mozilla Add-ons website](https://addons.mozilla.org/firefox/addon/tst-more-tree-commands/).
+This provides extra commands to manipulate tree structure for the Tree Style Tab addon.
+
+* [Signed package on AMO](https://addons.mozilla.org/firefox/addon/tst-more-tree-commands/)
+* [Development builds for each commit are available at "Artifacts" of the CI/CD action](https://github.com/piroor/tst-more-tree-commands/actions?query=workflow%3ACI%2FCD)
 
 ## Author's comment from @piroor
 
