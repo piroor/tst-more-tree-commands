@@ -6,16 +6,17 @@
 'use strict';
 
 import {
-  configs
+  configs,
+  TST_ID,
+  WS_ID,
+  callTSTAPI,
 } from '/common/common.js';
-
-const TST_ID = 'treestyletab@piro.sakura.ne.jp';
 
 
 async function registerToTST() {
   try {
     //const base = `moz-extension://${location.host}`;
-    await browser.runtime.sendMessage(TST_ID, {
+    await callTSTAPI({
       type: 'register-self',
       name: browser.i18n.getMessage('extensionName'),
       //icons: browser.runtime.getManifest().icons,
@@ -30,6 +31,7 @@ registerToTST();
 browser.runtime.onMessageExternal.addListener((message, sender) => {
   switch (sender.id) {
     case TST_ID:
+    case WS_ID:
       switch (message.type) {
         case 'ready':
           registerToTST();
@@ -325,7 +327,7 @@ browser.commands.onCommand.addListener(async command => {
       return;
 
     case 'tabbarLinesDown':
-      browser.runtime.sendMessage(TST_ID, {
+      callTSTAPI({
         type:   'scroll',
         window: 'active',
         delta:  `var(--tab-size) * ${configs.tabbarScrollLines}`,
@@ -334,7 +336,7 @@ browser.commands.onCommand.addListener(async command => {
       return;
 
     case 'tabbarLinesUp':
-      browser.runtime.sendMessage(TST_ID, {
+      callTSTAPI({
         type:   'scroll',
         window: 'active',
         delta:  `0px - var(--tab-size) * ${configs.tabbarScrollLines}`,
@@ -343,7 +345,7 @@ browser.commands.onCommand.addListener(async command => {
       return;
 
     case 'tabbarStopScroll':
-      browser.runtime.sendMessage(TST_ID, {
+      callTSTAPI({
         type:   'stop-scroll',
         window: 'active',
       });
@@ -368,14 +370,14 @@ async function getMultiselectedTabs(tab) {
 }
 
 async function getTreeItems(tabs) {
-  return tabs.length < 1 ? [] : browser.runtime.sendMessage(TST_ID, {
+  return tabs.length < 1 ? [] : callTSTAPI({
     type: 'get-tree',
     tabs: tabs.map(tab => tab.id)
   });
 }
 
 async function getRelatedTreeItem(tab, relation) {
-  return browser.runtime.sendMessage(TST_ID, {
+  return callTSTAPI({
     type: 'get-tree',
     tab: `${relation}-of-${tab.id}`
   });
@@ -404,7 +406,7 @@ function collectDescendantItems(treeItems) {
 
 async function group(tabs) {
   if (tabs.length >= 1)
-    await browser.runtime.sendMessage(TST_ID, {
+    await callTSTAPI({
       type: 'group-tabs',
       tabs: tabs.map(tab => tab.id)
     });
@@ -425,7 +427,7 @@ function collectTabIds(tabs, { tabIds, includeParent } = {}) {
 }
 
 async function ungroup(tabs) {
-  const treeItems = await browser.runtime.sendMessage(TST_ID, {
+  const treeItems = await callTSTAPI({
     type: 'get-tree',
     tabs: tabs.map(tab => tab.id)
   });
@@ -437,7 +439,7 @@ async function ungroup(tabs) {
 }
 
 async function flatten(tabs) {
-  const treeItems = await browser.runtime.sendMessage(TST_ID, {
+  const treeItems = await callTSTAPI({
     type: 'get-tree',
     tabs: tabs.map(tab => tab.id)
   })
@@ -474,7 +476,7 @@ async function flattenInternal(tabs, { targetTabIds, shouldDetachAll, recursivel
       if (!child)
         continue;
       if (topLevelParent) {
-        await browser.runtime.sendMessage(TST_ID, {
+        await callTSTAPI({
           type:   'attach',
           parent: topLevelParent,
           child:  child.id,
@@ -482,7 +484,7 @@ async function flattenInternal(tabs, { targetTabIds, shouldDetachAll, recursivel
         });
       }
       else {
-        await browser.runtime.sendMessage(TST_ID, {
+        await callTSTAPI({
           type: 'detach',
           tab:  child.id
         });
@@ -500,7 +502,7 @@ async function flattenInternal(tabs, { targetTabIds, shouldDetachAll, recursivel
 }
 
 async function indent(tabs) {
-  await browser.runtime.sendMessage(TST_ID, {
+  await callTSTAPI({
     type:           'indent',
     tab:            tabs[0].id,
     followChildren: true
@@ -508,7 +510,7 @@ async function indent(tabs) {
 }
 
 async function outdent(tabs) {
-  await browser.runtime.sendMessage(TST_ID, {
+  await callTSTAPI({
     type:           'outdent',
     tab:            tabs[0].id,
     followChildren: true
@@ -516,14 +518,14 @@ async function outdent(tabs) {
 }
 
 async function toggle(tabs) {
-  await Promise.all(tabs.map(tab => browser.runtime.sendMessage(TST_ID, {
+  await Promise.all(tabs.map(tab => callTSTAPI({
     type: 'toggle-tree-collapsed',
     tab: tab.id
   })));
 }
 
 async function moveBefore(tab, referenceTab) {
-  await browser.runtime.sendMessage(TST_ID, {
+  await callTSTAPI({
     type:           'move-before',
     tab:            tab.id,
     referenceTabId: referenceTab.id,
@@ -532,7 +534,7 @@ async function moveBefore(tab, referenceTab) {
 }
 
 async function moveToEnd(tabs) {
-  await browser.runtime.sendMessage(TST_ID, {
+  await callTSTAPI({
     type: 'move-to-end',
     tabs: tabs.map(tab => tab.id)
   });
