@@ -1,6 +1,8 @@
 # History
 
  - master/HEAD
+ - 1.5.1 (2024.3.26)
+   * Add support for "Tabs Sidebar" of Watefox G6.0.10 and later.
  - 1.5 (2022.09.12)
    * Activate "Create group" command for tabs even if any other group tab is in the selection ([by emvaized](https://github.com/piroor/tst-more-tree-commands/pull/18), thanks!)
  - 1.4 (2022.04.22)
