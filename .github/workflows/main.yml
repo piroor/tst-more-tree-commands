@@ -16,7 +16,7 @@ jobs:
         cat manifest.json.bak | jq ".version |= \"$version\"" > manifest.json
     - name: build xpi
       run: make
-    - uses: actions/upload-artifact@master
+    - uses: actions/upload-artifact@v4
       with:
         name: tst-more-tree-commands.xpi
         path: tst-more-tree-commands.xpi
