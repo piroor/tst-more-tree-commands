@@ -6,7 +6,8 @@
 'use strict';
 
 import {
-  configs
+  configs,
+  isRTL,
 } from '/common/common.js';
 import Options from '/extlib/Options.js';
 import '/extlib/l10n.js';
@@ -29,6 +30,7 @@ configs.$addObserver(onConfigChanged);
 */
 
 window.addEventListener('DOMContentLoaded', async () => {
+  document.documentElement.classList.toggle('rtl', isRTL());
   await configs.$loaded;
 
   //options.buildUIForAllConfigs(document.querySelector('#debug-configs'));
