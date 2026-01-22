@@ -252,7 +252,8 @@ browser.menus.onClicked.addListener(async (info, tab) => {
     case 'group': {
       if (miltiselectedTabs.length > 1) {
         await group(miltiselectedTabs);
-      } else {
+      }
+      else {
         const treeItems = await getTreeItems(miltiselectedTabs);
         const descendantItems = collectDescendantItems(treeItems);
         await group(descendantItems);
@@ -328,18 +329,18 @@ browser.commands.onCommand.addListener(async command => {
 
     case 'tabbarLinesDown':
       callTSTAPI({
-        type:   'scroll',
-        window: 'active',
-        delta:  `var(--tab-size) * ${configs.tabbarScrollLines}`,
+        type:     'scroll',
+        window:   'active',
+        delta:    `var(--tab-size) * ${configs.tabbarScrollLines}`,
         duration: configs.tabbarScrollDuration,
       });
       return;
 
     case 'tabbarLinesUp':
       callTSTAPI({
-        type:   'scroll',
-        window: 'active',
-        delta:  `0px - var(--tab-size) * ${configs.tabbarScrollLines}`,
+        type:     'scroll',
+        window:   'active',
+        delta:    `0px - var(--tab-size) * ${configs.tabbarScrollLines}`,
         duration: configs.tabbarScrollDuration,
       });
       return;
@@ -379,7 +380,7 @@ async function getTreeItems(tabs) {
 async function getRelatedTreeItem(tab, relation) {
   return callTSTAPI({
     type: 'get-tree',
-    tab: `${relation}-of-${tab.id}`
+    tab:  `${relation}-of-${tab.id}`
   });
 }
 
@@ -477,9 +478,9 @@ async function flattenInternal(tabs, { targetTabIds, shouldDetachAll, recursivel
         continue;
       if (topLevelParent) {
         await callTSTAPI({
-          type:   'attach',
-          parent: topLevelParent,
-          child:  child.id,
+          type:         'attach',
+          parent:       topLevelParent,
+          child:        child.id,
           insertBefore: insertBefore.id
         });
       }
@@ -520,7 +521,7 @@ async function outdent(tabs) {
 async function toggle(tabs) {
   await Promise.all(tabs.map(tab => callTSTAPI({
     type: 'toggle-tree-collapsed',
-    tab: tab.id
+    tab:  tab.id
   })));
 }
 
@@ -576,7 +577,8 @@ async function moveAfterNextSibling(tab) {
   if (nextOfNextSiblingLastDescendantItem != null) {
     await moveBefore(tab, nextOfNextSiblingLastDescendantItem);
     newIndentationLevel = nextOfNextSiblingLastDescendantItem.indent;
-  } else {
+  }
+  else {
     // If there's no tab following the tab's next sibling's last descendant, then
     // we can do a move-to-end to get what we want.
     const treeItems = await getTreeItems([tab]);
